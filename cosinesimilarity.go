@@ -5,8 +5,6 @@ import (
 	"math"
 )
 
-type Vector []float64
-
 func CosineSimilarity(a Vector, b Vector) (cosine float64, err error) {
 	count := 0
 	length_a := len(a)
