@@ -19,5 +19,5 @@ func iCheckIfVectorsAreEqual(ctx context.Context) (context.Context, error) {
 }
 
 func initializeEqualsScenario(ctx *godog.ScenarioContext) {
-	ctx.Step(`^I check if vector a is equal to vector b$`, iCheckIfVectorsAreEqual)
+	ctx.Step(`^I check if vector a equals vector b$`, iCheckIfVectorsAreEqual)
 }
