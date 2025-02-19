@@ -1,23 +1,21 @@
 package vectors
 
 import (
-	"reflect"
-	"testing"
+	"context"
+	"errors"
+	"github.com/cucumber/godog"
 )
 
-func TestVector_Normalize(t *testing.T) {
-	tests := []struct {
-		name string
-		v    Vector
-		want Vector
-	}{
-		{},
+func iNormalizeVector(key any) func(ctx context.Context) (context.Context, error) {
+	return func(ctx context.Context) (context.Context, error) {
+		v, ok := ctx.Value(key).(Vector)
+		if !ok {
+			return ctx, errors.New("vector not found in context")
+		}
+		return context.WithValue(ctx, resultKey{}, v.Normalize()), nil
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.v.Normalize(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Normalize() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+}
+
+func initializeNormalizeScenario(ctx *godog.ScenarioContext) {
+	ctx.Step(`^I normalize vector a$`, iNormalizeVector(aKey{}))
 }
