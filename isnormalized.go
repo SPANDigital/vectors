@@ -8,5 +8,5 @@ func (v Vector) IsNormalized() bool {
 		sumOfSquares += component * component
 	}
 	length := math.Sqrt(sumOfSquares)
-	return math.Abs(length-1.0) < 1e-9 // Use a small epsilon for floating point comparison
+	return math.Abs(length-1.0) <= DefaultEpsilon
 }

@@ -16,7 +16,7 @@ A lightweight Go library for vector mathematics operations, designed for machine
 - **Euclidean Distance**: Calculate straight-line distance between vectors
 - **Negative Inner Product**: Calculate negative dot product as a distance metric
 - **Taxicab Distance**: Calculate Manhattan/L1 distance between vectors
-- **Equality Checking**: Compare vectors for equality
+- **Equality Checking**: Compare vectors for exact or epsilon-based equality
 - **Normalization Verification**: Check if a vector is already normalized
 - **BDD Test Coverage**: Comprehensive behavioral tests with Cucumber/godog
 
@@ -149,6 +149,47 @@ v3 := vectors.Vector{1.0, 2.0}
 v1.Equals(v2) // Returns true
 v1.Equals(v3) // Returns false (different lengths)
 ```
+
+#### EqualsWithEpsilon
+
+```go
+func (v Vector) EqualsWithEpsilon(other Vector, epsilon float64) bool
+```
+
+Compares two vectors for equality within a specified tolerance. Returns true if the absolute difference between each corresponding component is less than or equal to epsilon. Returns false if vectors have different lengths.
+
+This method is useful for comparing floating-point vectors where exact equality is impractical due to precision limitations.
+
+**Example:**
+```go
+v1 := vectors.Vector{1.0, 2.0, 3.0}
+v2 := vectors.Vector{1.0001, 2.0001, 3.0001}
+
+// Exact comparison fails
+v1.Equals(v2) // Returns false
+
+// Epsilon comparison succeeds
+v1.EqualsWithEpsilon(v2, 0.001) // Returns true
+v1.EqualsWithEpsilon(v2, 0.00001) // Returns false
+
+// Using the default epsilon constant
+v3 := vectors.Vector{1.0, 2.0}
+v4 := vectors.Vector{1.000000001, 2.000000001}
+v3.EqualsWithEpsilon(v4, vectors.DefaultEpsilon) // Returns true
+
+// Different lengths still return false
+v5 := vectors.Vector{1.0, 2.0}
+v6 := vectors.Vector{1.0}
+v5.EqualsWithEpsilon(v6, 0.1) // Returns false
+```
+
+### Constants
+
+```go
+const DefaultEpsilon = 1e-9
+```
+
+The default epsilon value used for floating-point comparisons throughout the library. This constant is used internally by `IsNormalized()` and can be used as a standard tolerance for `EqualsWithEpsilon()`.
 
 ### Functions
 
