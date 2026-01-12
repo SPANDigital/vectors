@@ -103,6 +103,7 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	initializeNormalizeScenario(ctx)
 	initializeIsNormalizedScenario(ctx)
 	initializeEqualsScenario(ctx)
+	initializeMagnitudeScenario(ctx)
 }
 
 func TestFeatures(t *testing.T) {
