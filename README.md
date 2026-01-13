@@ -12,6 +12,7 @@ A lightweight Go library for vector mathematics operations, designed for machine
 
 - **Magnitude**: Calculate the Euclidean length of vectors
 - **Normalization**: Convert vectors to unit length
+- **Vector Arithmetic**: Add and subtract vectors element-wise
 - **Cosine Similarity**: Measure similarity between vectors
 - **Euclidean Distance**: Calculate straight-line distance between vectors
 - **Negative Inner Product**: Calculate negative dot product as a distance metric
@@ -52,6 +53,21 @@ func main() {
     // Check if normalized
     isNorm := normalized.IsNormalized()
     fmt.Printf("Is normalized: %t\n", isNorm) // Output: Is normalized: true
+
+    // Add vectors
+    v3 := vectors.Vector{1.0, 2.0}
+    sum, err := v.Add(v3)
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("Sum: %v\n", sum) // Output: Sum: [4 6]
+
+    // Subtract vectors
+    diff, err := v.Subtract(v3)
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("Difference: %v\n", diff) // Output: Difference: [2 2]
 
     // Calculate cosine similarity
     v2 := vectors.Vector{1.0, 2.0}
@@ -182,6 +198,84 @@ v3.EqualsWithEpsilon(v4, vectors.DefaultEpsilon) // Returns true
 v5 := vectors.Vector{1.0, 2.0}
 v6 := vectors.Vector{1.0}
 v5.EqualsWithEpsilon(v6, 0.1) // Returns false
+```
+
+#### Add
+
+```go
+func (v Vector) Add(other Vector) (Vector, error)
+```
+
+Returns a new vector that is the element-wise sum of v and other. Returns an error if the vectors have different lengths.
+
+The operation computes: result[i] = v[i] + other[i]
+
+**Example:**
+```go
+v1 := vectors.Vector{1.0, 2.0, 3.0}
+v2 := vectors.Vector{4.0, 5.0, 6.0}
+
+sum, err := v1.Add(v2)
+if err != nil {
+    panic(err)
+}
+fmt.Printf("Sum: %v\n", sum) // Output: Sum: [5 7 9]
+
+// Add with negative components
+v3 := vectors.Vector{-1.0, 2.0}
+v4 := vectors.Vector{3.0, -4.0}
+sum2, _ := v3.Add(v4) // Returns [2.0, -2.0]
+
+// Identity: adding zero vector
+v5 := vectors.Vector{3.0, 4.0}
+zero := vectors.Vector{0.0, 0.0}
+sum3, _ := v5.Add(zero) // Returns [3.0, 4.0]
+
+// Different lengths return error
+v6 := vectors.Vector{1.0, 2.0}
+v7 := vectors.Vector{1.0}
+_, err = v6.Add(v7) // Returns error
+```
+
+#### Subtract
+
+```go
+func (v Vector) Subtract(other Vector) (Vector, error)
+```
+
+Returns a new vector that is the element-wise difference of v and other. Returns an error if the vectors have different lengths.
+
+The operation computes: result[i] = v[i] - other[i]
+
+**Example:**
+```go
+v1 := vectors.Vector{5.0, 7.0, 9.0}
+v2 := vectors.Vector{1.0, 2.0, 3.0}
+
+diff, err := v1.Subtract(v2)
+if err != nil {
+    panic(err)
+}
+fmt.Printf("Difference: %v\n", diff) // Output: Difference: [4 5 6]
+
+// Subtract with negative components
+v3 := vectors.Vector{3.0, -4.0}
+v4 := vectors.Vector{-1.0, 2.0}
+diff2, _ := v3.Subtract(v4) // Returns [4.0, -6.0]
+
+// Identity: subtracting zero vector
+v5 := vectors.Vector{3.0, 4.0}
+zero := vectors.Vector{0.0, 0.0}
+diff3, _ := v5.Subtract(zero) // Returns [3.0, 4.0]
+
+// Inverse: subtracting from itself returns zero vector
+v6 := vectors.Vector{3.0, 4.0}
+diff4, _ := v6.Subtract(v6) // Returns [0.0, 0.0]
+
+// Different lengths return error
+v7 := vectors.Vector{1.0, 2.0, 3.0}
+v8 := vectors.Vector{1.0, 2.0}
+_, err = v7.Subtract(v8) // Returns error
 ```
 
 ### Constants

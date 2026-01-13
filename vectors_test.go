@@ -99,6 +99,7 @@ func initializeSharedSteps(ctx *godog.ScenarioContext) {
 
 func InitializeScenario(ctx *godog.ScenarioContext) {
 	initializeSharedSteps(ctx)
+	initializeArithmeticScenario(ctx)
 	initializeCosineSimilarityScenario(ctx)
 	initializeNormalizeScenario(ctx)
 	initializeIsNormalizedScenario(ctx)
