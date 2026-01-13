@@ -28,6 +28,48 @@ A lightweight Go library for vector mathematics operations, designed for machine
 go get github.com/spandigital/vectors
 ```
 
+## Type Support
+
+The vectors library supports both `float32` and `float64` through Go generics, allowing you to choose between precision and performance/memory efficiency.
+
+### Using float64 (default)
+
+The `Vector` type is an alias for `Vec[float64]` for backward compatibility. Existing code continues to work without modification:
+
+```go
+v := vectors.Vector{3.0, 4.0}  // Uses float64
+magnitude := v.Magnitude()      // Returns float64
+```
+
+### Using float32
+
+For memory efficiency or GPU compatibility, use `Vec[float32]`:
+
+```go
+v := vectors.Vec[float32]{3.0, 4.0}  // Uses float32
+magnitude := v.Magnitude()            // Returns float32
+```
+
+### Type Consistency
+
+All operations preserve the type of their inputs:
+- Methods on `Vec[float32]` return `float32` or `Vec[float32]`
+- Methods on `Vec[float64]` return `float64` or `Vec[float64]`
+- You cannot mix float32 and float64 vectors in operations (compile-time safety)
+
+### Epsilon Values
+
+The library provides type-specific epsilon constants for floating-point comparisons:
+- `DefaultEpsilon64 = 1e-9` for float64 comparisons
+- `DefaultEpsilon32 = 1e-7` for float32 comparisons
+- `DefaultEpsilon` (deprecated) - use `DefaultEpsilon64` instead
+
+```go
+v32 := vectors.Vec[float32]{0.6, 0.8}
+v32Approx := vectors.Vec[float32]{0.6000001, 0.8000001}
+equal := v32.EqualsWithEpsilon(v32Approx, vectors.DefaultEpsilon32)
+```
+
 ## Quick Start
 
 ```go
@@ -91,10 +133,16 @@ func main() {
 ### Type Definition
 
 ```go
-type Vector []float64
+// Generic vector type supporting float32 and float64
+type Vec[T Float] []T
+
+// Backward-compatible alias for float64 vectors
+type Vector = Vec[float64]
 ```
 
-Vector is an alias for a slice of float64 values, representing an n-dimensional vector.
+`Vec[T]` is a generic vector type supporting both `float32` and `float64`, representing an n-dimensional vector with components of type `T`.
+
+`Vector` is a type alias for `Vec[float64]`, maintained for backward compatibility with existing code.
 
 ### Methods
 
@@ -281,10 +329,20 @@ _, err = v7.Subtract(v8) // Returns error
 ### Constants
 
 ```go
-const DefaultEpsilon = 1e-9
+const (
+    DefaultEpsilon64 = 1e-9  // For float64 comparisons
+    DefaultEpsilon32 = 1e-7  // For float32 comparisons
+    DefaultEpsilon   = 1e-9  // Deprecated: Use DefaultEpsilon64
+)
 ```
 
-The default epsilon value used for floating-point comparisons throughout the library. This constant is used internally by `IsNormalized()` and can be used as a standard tolerance for `EqualsWithEpsilon()`.
+Epsilon constants for floating-point comparisons:
+
+- `DefaultEpsilon64`: Default tolerance for float64 comparisons (1e-9). This represents a very small value suitable for 64-bit floating-point precision.
+- `DefaultEpsilon32`: Default tolerance for float32 comparisons (1e-7). This represents a small value suitable for 32-bit floating-point precision.
+- `DefaultEpsilon`: Legacy constant for backward compatibility. New code should use `DefaultEpsilon64` or `DefaultEpsilon32` explicitly.
+
+`IsNormalized()` automatically uses the appropriate epsilon for the vector type. For `EqualsWithEpsilon()`, you can use the type-specific constant that matches your vector type.
 
 ### Functions
 
