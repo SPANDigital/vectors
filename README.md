@@ -15,6 +15,7 @@ A lightweight Go library for vector mathematics operations, designed for machine
 - **Cosine Similarity**: Measure similarity between vectors
 - **Euclidean Distance**: Calculate straight-line distance between vectors
 - **Negative Inner Product**: Calculate negative dot product as a distance metric
+- **Dot Product**: Calculate standard dot product between vectors
 - **Taxicab Distance**: Calculate Manhattan/L1 distance between vectors
 - **Equality Checking**: Compare vectors for exact or epsilon-based equality
 - **Normalization Verification**: Check if a vector is already normalized
@@ -289,6 +290,51 @@ product2, _ := vectors.NegativeInnerProduct(v3, v4) // Returns 0.0
 v5 := vectors.Vector{-1.0, 2.0}
 v6 := vectors.Vector{3.0, -4.0}
 product3, _ := vectors.NegativeInnerProduct(v5, v6) // Returns 11.0
+```
+
+**Note**: If you need the standard (positive) dot product, use `DotProduct()` instead. `NegativeInnerProduct` is specifically designed for use as a distance metric in machine learning applications.
+
+#### DotProduct
+
+```go
+func DotProduct(a Vector, b Vector) (float64, error)
+```
+
+Calculates the dot product (inner product) between two vectors using the formula: Σ(ai * bi)
+
+The dot product is a fundamental vector operation used for:
+- Computing projections
+- Measuring similarity (when normalized)
+- Calculating angles between vectors
+- Many machine learning operations
+
+Returns an error if the vectors have different lengths.
+
+**Example:**
+```go
+v1 := vectors.Vector{1.0, 2.0, 3.0}
+v2 := vectors.Vector{4.0, 5.0, 6.0}
+
+product, err := vectors.DotProduct(v1, v2)
+if err != nil {
+    panic(err)
+}
+fmt.Printf("Dot product: %.1f\n", product) // Returns 32.0
+
+// Orthogonal vectors have zero dot product
+v3 := vectors.Vector{1.0, 0.0}
+v4 := vectors.Vector{0.0, 1.0}
+product2, _ := vectors.DotProduct(v3, v4) // Returns 0.0
+
+// With negative components
+v5 := vectors.Vector{-1.0, 2.0}
+v6 := vectors.Vector{3.0, -4.0}
+product3, _ := vectors.DotProduct(v5, v6) // Returns -11.0
+
+// Different lengths return error
+v7 := vectors.Vector{1.0, 2.0}
+v8 := vectors.Vector{1.0}
+_, err = vectors.DotProduct(v7, v8) // Returns error
 ```
 
 #### TaxicabDistance
