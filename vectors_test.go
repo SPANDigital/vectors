@@ -107,6 +107,7 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	initializeEuclideanDistanceScenario(ctx)
 	initializeNegativeInnerProductScenario(ctx)
 	initializeTaxicabDistanceScenario(ctx)
+	initializeDotProductScenario(ctx)
 }
 
 func TestFeatures(t *testing.T) {
