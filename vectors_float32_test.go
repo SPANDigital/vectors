@@ -225,7 +225,7 @@ func TestBackwardCompatibility(t *testing.T) {
 	// Test that Vector alias works
 	v := Vector{3.0, 4.0}
 	mag := v.Magnitude()
-	var _ float64 = mag // Should compile - mag is float64
+	var _ float64 = mag //nolint:staticcheck // Intentional: demonstrates mag is float64
 
 	// Test all existing patterns work
 	v2 := Vector{1.0, 2.0}
@@ -233,18 +233,18 @@ func TestBackwardCompatibility(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	var _ Vector = sum // Should compile - sum is Vector
+	var _ Vector = sum //nolint:staticcheck // Intentional: demonstrates sum is Vector
 
 	// Test functions work with Vector
 	dot, err := DotProduct(v, v2)
 	if err != nil {
 		t.Fatal(err)
 	}
-	var _ float64 = dot // Should compile - dot is float64
+	var _ float64 = dot //nolint:staticcheck // Intentional: demonstrates dot is float64
 
 	// Test that Vector and Vec[float64] are identical
-	var v3 Vec[float64] = Vector{5.0, 6.0}
-	var v4 Vector = Vec[float64]{7.0, 8.0}
+	var v3 Vec[float64] = Vector{5.0, 6.0}         //nolint:staticcheck // Intentional: demonstrates type compatibility
+	var v4 Vector = Vec[float64]{7.0, 8.0}         //nolint:staticcheck // Intentional: demonstrates type compatibility
 	_, err = v3.Add(v4)
 	if err != nil {
 		t.Fatal(err)
