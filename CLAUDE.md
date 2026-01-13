@@ -32,10 +32,59 @@ pre-commit run --all-files
 ### Core Design
 This is a Go library providing vector mathematics operations. The architecture follows these principles:
 
-- **Type Definition**: `Vector []float64` - vectors are slices of float64
-- **Receiver Methods**: Operations implemented as methods on the Vector type (e.g., `v.Magnitude()`, `v.Normalize()`)
+- **Generic Type Definition**: `Vec[T Float] []T` - vectors support both float32 and float64
+- **Backward Compatibility**: `Vector = Vec[float64]` - type alias ensures existing code works unchanged
+- **Receiver Methods**: Operations implemented as generic methods on the Vec[T] type (e.g., `v.Magnitude()`, `v.Normalize()`)
+- **Type Preservation**: All operations return the same type as their inputs (e.g., `Vec[float32].Magnitude()` returns `float32`)
 - **Error Handling**: Operations that can fail return `(result, error)` tuples (e.g., `CosineSimilarity` returns error for zero vectors)
 - **BDD Testing**: Comprehensive test coverage using Cucumber/godog with Gherkin feature files
+
+### Working with Generic Types
+
+When adding new operations, follow these patterns:
+
+**Methods** (operate on a single vector or return vector results):
+```go
+func (v Vec[T]) NewMethod() T {
+    sum := T(0)  // Use T(0) instead of 0.0
+    for _, component := range v {
+        sum += component
+    }
+    return sum
+}
+```
+
+**Functions** (operate on multiple vectors):
+```go
+func NewFunction[T Float](a Vec[T], b Vec[T]) (T, error) {
+    if len(a) != len(b) {
+        return T(0), errors.New("vectors must have the same length")
+    }
+    // implementation
+}
+```
+
+**Math Operations** (convert to float64, then back to T):
+```go
+func (v Vec[T]) OperationWithMath() T {
+    value := v.someValue()
+    result := T(math.Sqrt(float64(value)))  // Always convert for math ops
+    return result
+}
+```
+
+**Type-Specific Epsilon**:
+```go
+func (v Vec[T]) IsSpecialProperty() bool {
+    eps := epsilon[T]()  // Gets DefaultEpsilon32 for float32, DefaultEpsilon64 for float64
+    // use eps for comparisons
+}
+```
+
+**Creating New Vectors**:
+```go
+result := make(Vec[T], len(v))  // Use Vec[T], not Vector
+```
 
 ### File Organization Pattern
 Each vector operation follows this structure:
@@ -44,7 +93,7 @@ Each vector operation follows this structure:
 - `features/operation.feature` - Gherkin feature file with test scenarios
 
 Example for the Magnitude operation:
-- `magnitude.go` - Contains `func (v Vector) Magnitude() float64`
+- `magnitude.go` - Contains `func (v Vec[T]) Magnitude() T`
 - `magnitude_test.go` - Contains `iCalculateMagnitudeOfVector()` and `initializeMagnitudeScenario()`
 - `features/magnitude.feature` - Contains BDD test scenarios
 
